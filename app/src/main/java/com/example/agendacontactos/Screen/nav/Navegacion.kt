@@ -12,7 +12,7 @@ import com.example.agendacontactos.MainScreen
 @Composable
 fun NavigationExample() {
     val navController = rememberNavController()
-    val contactList = remember { mutableStateListOf<Contact>() }  // Lista mutable para almacenar contactos
+    val contactList = remember { mutableStateListOf<Contact>() }
 
     NavHost(navController = navController, startDestination = "add_contact") {
         composable("add_contact") {
@@ -29,9 +29,34 @@ fun NavigationExample() {
             InfoScreen(
                 contactList = contactList,
                 onBackToForm = {
-                    navController.popBackStack() // Regresa al formulario
+                    navController.popBackStack()
+                },
+                onEditContact = { contact ->
+                    navController.navigate("edit_contact/${contact.nombre}/${contact.apellido}/${contact.alias}/${contact.telefono}/${contact.hobbie}")
+                },
+                onDeleteContact = { contact ->
+                    contactList.remove(contact)
                 }
             )
         }
-    }
+        composable("edit_contact/{nombre}/{apellido}/{alias}/{telefono}/{hobbie}") { backStackEntry ->
+            val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+            val apellido = backStackEntry.arguments?.getString("apellido") ?: ""
+            val alias = backStackEntry.arguments?.getString("alias") ?: ""
+            val telefono = backStackEntry.arguments?.getString("telefono") ?: ""
+            val hobbie = backStackEntry.arguments?.getString("hobbie") ?: ""
+            EditContact(
+                contact = Contact(nombre, apellido, alias, telefono, hobbie),
+                onSave = { updatedContact ->
+                    val index = contactList.indexOfFirst { it.telefono == updatedContact.telefono }
+                    if (index != -1) {
+                        contactList[index] = updatedContact
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+            }
+        }
 }
