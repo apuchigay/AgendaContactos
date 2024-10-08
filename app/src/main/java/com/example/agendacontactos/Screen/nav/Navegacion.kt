@@ -31,24 +31,25 @@ fun NavigationExample() {
                 onBackToForm = {
                     navController.popBackStack()
                 },
-                onEditContact = { contact ->
-                    navController.navigate("edit_contact/${contact.nombre}/${contact.apellido}/${contact.alias}/${contact.telefono}/${contact.hobbie}")
+                onEditContact = { contact, index ->
+                    navController.navigate("edit_contact/$index/${contact.nombre}/${contact.apellido}/${contact.alias}/${contact.telefono}/${contact.hobbie}")
                 },
                 onDeleteContact = { contact ->
                     contactList.remove(contact)
                 }
             )
         }
-        composable("edit_contact/{nombre}/{apellido}/{alias}/{telefono}/{hobbie}") { backStackEntry ->
+        composable("edit_contact/{index}/{nombre}/{apellido}/{alias}/{telefono}/{hobbie}") { backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index")?.toInt() ?: -1
             val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
             val apellido = backStackEntry.arguments?.getString("apellido") ?: ""
             val alias = backStackEntry.arguments?.getString("alias") ?: ""
             val telefono = backStackEntry.arguments?.getString("telefono") ?: ""
             val hobbie = backStackEntry.arguments?.getString("hobbie") ?: ""
+
             EditContact(
                 contact = Contact(nombre, apellido, alias, telefono, hobbie),
                 onSave = { updatedContact ->
-                    val index = contactList.indexOfFirst { it.telefono == updatedContact.telefono }
                     if (index != -1) {
                         contactList[index] = updatedContact
                     }
@@ -57,6 +58,6 @@ fun NavigationExample() {
                     navController.popBackStack()
                 }
             )
-            }
         }
+    }
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 fun InfoScreen(
     contactList: List<Contact>,
     onBackToForm: () -> Unit,
-    onEditContact: (Contact) -> Unit,
+    onEditContact: (Contact, Int) -> Unit,  // Pasa también el índice del contacto
     onDeleteContact: (Contact) -> Unit
 ) {
     Column(
@@ -35,8 +36,8 @@ fun InfoScreen(
                 .weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(contactList) { contact ->
-                ContactCard(contact, onEditContact, onDeleteContact)
+            itemsIndexed(contactList) { index, contact ->
+                ContactCard(contact, { onEditContact(contact, index) }, onDeleteContact)
             }
         }
 
@@ -48,6 +49,7 @@ fun InfoScreen(
         }
     }
 }
+
 
 @Composable
 fun ContactCard(
